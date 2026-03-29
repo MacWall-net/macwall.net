@@ -1,0 +1,11 @@
+{
+    "scripts": {
+        "dev": "astro dev",
+        "build": "astro build",
+        "preview": "astro preview"
+    },
+    "dependencies": {
+        "@astrojs/ts-plugin": "^1.10.7",
+        "astro": "^5.0.0"
+    }
+}
