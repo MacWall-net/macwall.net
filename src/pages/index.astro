@@ -1,12 +1,144 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import { url } from '../url';
 ---
- 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>macwall.net</title>
-  </head>
-  <body>
-  </body>
-</html>
+
+<Layout title="MacWall: Network Firewall for Mac" description="MacWall shows every network connection your Mac makes and lets you block, allow or ask about each one. See what your AI tools send.">
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <p class="badge">Beta · in active development</p>
+        <h1>See what your AI tools send.</h1>
+        <p class="lede">MacWall shows every network connection your Mac makes and lets you decide which ones are allowed. Which app made it, where it goes, which country the server is in, and how much data went out.</p>
+        <div class="cta">
+          <!-- TODO: replace with the real Mac App Store link once the app is live -->
+          <a class="btn btn-primary" href="#app-store">Download on the Mac App Store</a>
+          <a class="btn" href={url('support/')}>Setup &amp; support</a>
+        </div>
+        <p class="note">For macOS. No account, no analytics, no tracking.</p>
+        <img class="shot" src={url('assets/shot-01.jpg')} width="1600" height="1000" alt="MacWall log viewer listing outbound connections from curl, Claude and other apps to AI API hosts, with a detail panel showing the remote host, a map, a bandwidth chart and the process tree.">
+      </div>
+    </section>
+
+    <section class="feature">
+      <div class="wrap">
+        <div class="text">
+          <p class="eyebrow">See every connection</p>
+          <h2>A live log of everything that talks to the network.</h2>
+          <p>AI assistants, coding agents and freshly installed apps talk to servers you never see. MacWall uses a macOS network content filter to record each connection as it opens.</p>
+          <ul>
+            <li>TCP and UDP connections, inbound and outbound</li>
+            <li>App name, process ID, code-signing identifier and the full parent-process chain, so you can tell which tool launched a request</li>
+            <li>Remote host, IP address and port, local address, and the URL when macOS provides one</li>
+            <li>Bytes sent and received, with a bandwidth chart for each connection</li>
+            <li>Time ranges from the last 5 minutes to everything recorded</li>
+          </ul>
+        </div>
+        <img class="shot" src={url('assets/shot-03.jpg')} width="1600" height="1000" loading="lazy" alt="Connection detail for a newly installed app, showing its process chain and the hosts it contacted.">
+      </div>
+    </section>
+
+    <section class="feature">
+      <div class="wrap">
+        <div class="text">
+          <p class="eyebrow">Put apps and agents on a leash</p>
+          <h2>Block, Allow and Ask rules.</h2>
+          <p>Rules are short queries such as <code>proc = "curl" AND dir = out</code>.</p>
+          <ul>
+            <li>Block rules drop matching connections as they open</li>
+            <li>Ask rules let a matching connection through and then pop up a prompt, so you can turn it into an allow or block rule with one click</li>
+            <li>Save the current search as a rule straight from the sidebar</li>
+            <li>Every rule edit is versioned; enable, disable or archive rules at any time</li>
+          </ul>
+        </div>
+        <img class="shot" src={url('assets/shot-02.jpg')} width="1600" height="1000" loading="lazy" alt="MacWall rules editor with a block rule for an AI agent's outbound traffic.">
+      </div>
+    </section>
+
+    <section class="feature">
+      <div class="wrap">
+        <div class="text">
+          <p class="eyebrow">Know where your data goes</p>
+          <h2>Every server, on a map.</h2>
+          <p>The country of every remote server is looked up in a GeoIP database built into the app, so IP addresses are never sent to a lookup service. Select connections to see where they go on a world map.</p>
+          <p>Install something new, filter the log by its name, and see every host and country it contacts. If an app phones home to trackers you didn't agree to, block them.</p>
+        </div>
+        <img class="shot" src={url('assets/shot-04.jpg')} width="1600" height="1000" loading="lazy" alt="World map highlighting the countries that selected connections went to.">
+      </div>
+    </section>
+
+    <section class="feature">
+      <div class="wrap">
+        <div class="text">
+          <p class="eyebrow">Ask your network anything</p>
+          <h2>FQL, a query language for your traffic.</h2>
+          <p>FQL (flow query language) is MacWall's own original query language. Its filters are inspired by Wireshark display filters, and its pipelines by Loki's LogQL. Filter the log with readable expressions:</p>
+<pre is:raw><code>last 5m AND dir = out AND host CONTAINS "openai"
+country != US AND proto = TCP
+proc = "curl" | sort bytes_out DESC</code></pre>
+          <p>Autocomplete suggests fields, operators and values as you type, and syntax errors are highlighted in place. Click any value in the detail panel to show or hide matching rows.</p>
+        </div>
+        <img class="shot" src={url('assets/shot-05.jpg')} width="1600" height="1000" loading="lazy" alt="An FQL query in the MacWall search bar with matching connections below.">
+      </div>
+    </section>
+
+    <section class="feature">
+      <div class="wrap">
+        <div class="text">
+          <p class="eyebrow">Drive it from any AI agent</p>
+          <h2>Built-in MCP server and command line.</h2>
+          <p>MacWall includes a Model Context Protocol (MCP) server. Register it with an MCP-capable AI client and ask questions like “What did this app connect to in the last hour?” The agent can query connections, inspect process trees and, if you allow it, add or change rules. Start the server with <code>--read-only</code> to give agents query access only.</p>
+          <p>The same features work from Terminal: check status, print recent connections with an FQL query, and add, edit, enable, disable or delete rules.</p>
+        </div>
+        <img class="shot" src={url('assets/shot-06.jpg')} width="1600" height="1000" loading="lazy" alt="An AI client in Terminal using MacWall's MCP tools to query an app's connections and add two block rules.">
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="wrap">
+        <h2>Private by design.</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Stays on your Mac</h3>
+            <p>Connection logs and rules are stored only on your Mac. No account, no sign-up, no analytics, no tracking.</p>
+          </div>
+          <div class="card">
+            <h3>Offline country lookup</h3>
+            <p>Country lookups use a database bundled with the app, so IP addresses are never sent to a lookup service.</p>
+          </div>
+          <div class="card">
+            <h3>Metadata, not contents</h3>
+            <p>MacWall records connection details and byte counts, not the contents of your traffic.</p>
+          </div>
+        </div>
+        <p style="margin-top:24px"><a href={url('privacy/')}>Read the privacy policy</a></p>
+      </div>
+    </section>
+
+    <section class="feature" id="app-store">
+      <div class="wrap" style="grid-template-columns:1fr">
+        <div class="text">
+          <h2>Get MacWall</h2>
+          <p>MacWall installs a network content filter system extension. After the first launch, approve it in System Settings &gt; General &gt; Login Items &amp; Extensions &gt; Network Extensions. The <a href={url('support/')}>support page</a> walks through setup step by step.</p>
+          <div class="cta" style="justify-content:flex-start">
+            <!-- TODO: replace with the real Mac App Store link once the app is live -->
+            <a class="btn btn-primary" href="#app-store">Mac App Store (coming soon)</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature" id="contributing">
+      <div class="wrap" style="grid-template-columns:1fr">
+        <div class="text">
+          <h2>Contributing</h2>
+          <p>MacWall is in beta and in active development. When it's released, the app will be open-sourced.</p>
+          <p>Found a bug, or have an idea for MacWall? Open an issue. Bug reports, feature requests and feedback on the beta are all welcome.</p>
+          <div class="cta" style="justify-content:flex-start">
+            <a class="btn" href="https://github.com/MacWall-net/macwall/issues">Open an issue on GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

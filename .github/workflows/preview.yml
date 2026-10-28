@@ -1,0 +1,36 @@
+name: Preview
+ 
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to preview
+        required: true
+        default: main
+ 
+permissions:
+  contents: write
+ 
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+ 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+ 
+      - run: npm ci
+      - run: npm run build
+        env:
+          BASE_PATH: /preview/${{ inputs.branch }}
+ 
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: preview/${{ inputs.branch }}

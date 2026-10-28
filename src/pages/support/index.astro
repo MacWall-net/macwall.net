@@ -1,0 +1,169 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { url } from '../../url';
+---
+
+<Layout title="MacWall Support" description="How to set up MacWall, contact support, and answers to common questions about rules, FQL, the MCP server and the command line." current="support">
+  <main class="page">
+    <div class="wrap prose">
+      <h1>Support</h1>
+      <p class="meta">Setup help, common questions, and how to reach us.</p>
+
+      <div class="callout">
+        <p><strong>Contact:</strong> found a bug, or have an idea? <a href="https://github.com/MacWall-net/macwall/issues">Open an issue on GitHub</a>. MacWall is in beta, so feedback is welcome.</p>
+        <p>When reporting a problem, please include your macOS version, your MacWall version, and what you expected to happen. The output of <code>MacWall --status</code> (see below) helps too.</p>
+      </div>
+
+      <h2 id="setup">Setup</h2>
+      <p>MacWall works through a network content filter system extension, which macOS asks you to approve once. Setup takes about a minute.</p>
+      <ol>
+        <li>Launch MacWall from <strong>Applications</strong>. A shield icon appears in the menu bar and a setup popover lists five steps.</li>
+        <li>Next to <strong>Extension installed</strong>, click <strong>Install</strong> (then <strong>Activate</strong> or <strong>Open Settings</strong> on the next row if shown). macOS reports that a system extension was blocked.</li>
+        <li>Open <strong>System Settings &gt; General &gt; Login Items &amp; Extensions &gt; Network Extensions</strong> and turn MacWall on. An administrator password may be required.</li>
+        <li>Back in the MacWall popover, click <strong>Install</strong> next to <strong>Filter installed</strong>, then click <strong>Allow</strong> when macOS asks whether MacWall may filter network content.</li>
+        <li><strong>Filter enabled</strong> turns green and the menu bar shield turns green. Click <strong>Log Viewer</strong> in the popover to see connections as they happen.</li>
+      </ol>
+      <p>If the shield isn't green, open the popover: it shows which step still needs attention.</p>
+
+      <h2 id="mcp">Set up the MCP server</h2>
+      <p>MacWall includes a Model Context Protocol (MCP) server, so an AI assistant or coding agent can answer questions about your network activity and, if you allow it, manage your rules. The server runs locally: your AI client starts it and talks to it over standard input and output. It does not listen on the network.</p>
+      <p>Before you start, finish the <a href="#setup">setup</a> above. MacWall must be in <strong>Applications</strong> and the menu bar shield must be green, because the server reads data from the running filter. Every client below runs the same command:</p>
+<pre is:raw><code>/Applications/MacWall.app/Contents/MacOS/MacWall --mcp</code></pre>
+      <div class="callout">
+        <p><strong>Read-only mode:</strong> add <code>--read-only</code> after <code>--mcp</code> to give the agent query tools only. It can then read connections and rules but can't add, change or delete rules or turn the filter on or off.</p>
+      </div>
+
+      <h3>Claude Code</h3>
+      <p>Run this in Terminal:</p>
+<pre is:raw><code>claude mcp add macwall -- /Applications/MacWall.app/Contents/MacOS/MacWall --mcp</code></pre>
+      <p>Read-only: <code>claude mcp add macwall -- /Applications/MacWall.app/Contents/MacOS/MacWall --mcp --read-only</code></p>
+
+      <h3>Claude Desktop</h3>
+      <p>Open <strong>Claude &gt; Settings &gt; Developer &gt; Edit Config</strong>. This opens <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>. Add MacWall under <code>mcpServers</code>, then quit and reopen Claude:</p>
+<pre is:raw><code>{
+  "mcpServers": {
+    "macwall": {
+      "command": "/Applications/MacWall.app/Contents/MacOS/MacWall",
+      "args": ["--mcp"]
+    }
+  }
+}</code></pre>
+
+      <h3>Cursor</h3>
+      <p>Add the same <code>mcpServers</code> entry to <code>~/.cursor/mcp.json</code> to use MacWall in every project, or to <code>.cursor/mcp.json</code> in a project folder to use it only there:</p>
+<pre is:raw><code>{
+  "mcpServers": {
+    "macwall": {
+      "command": "/Applications/MacWall.app/Contents/MacOS/MacWall",
+      "args": ["--mcp"]
+    }
+  }
+}</code></pre>
+
+      <h3>VS Code with GitHub Copilot</h3>
+      <p>Run <strong>MCP: Open User Configuration</strong> from the Command Palette to use MacWall in every workspace, or create <code>.vscode/mcp.json</code> in a workspace. VS Code uses a <code>servers</code> key (not <code>mcpServers</code>):</p>
+<pre is:raw><code>{
+  "servers": {
+    "macwall": {
+      "type": "stdio",
+      "command": "/Applications/MacWall.app/Contents/MacOS/MacWall",
+      "args": ["--mcp"]
+    }
+  }
+}</code></pre>
+      <p>MacWall's tools then appear in Copilot Chat in agent mode.</p>
+
+      <h3>OpenAI Codex</h3>
+      <p>Run this in Terminal:</p>
+<pre is:raw><code>codex mcp add macwall -- /Applications/MacWall.app/Contents/MacOS/MacWall --mcp</code></pre>
+      <p>Or add it to <code>~/.codex/config.toml</code> yourself. The Codex CLI and IDE extension share this file:</p>
+<pre is:raw><code>[mcp_servers.macwall]
+command = "/Applications/MacWall.app/Contents/MacOS/MacWall"
+args = ["--mcp"]</code></pre>
+
+      <h3>Other clients</h3>
+      <p>Any MCP client that supports local (stdio) servers works. Set the command to <code>/Applications/MacWall.app/Contents/MacOS/MacWall</code> and the arguments to <code>--mcp</code>, plus <code>--read-only</code> if you want it.</p>
+
+      <h3>Try it</h3>
+      <p>Ask your assistant things like:</p>
+      <ul>
+        <li>“What did this app connect to in the last hour?”</li>
+        <li>“Which countries did my Mac send data to today?”</li>
+        <li>“Show me the process tree for the connection to this host.”</li>
+        <li>“Block outbound connections from curl.” (needs full mode, not read-only)</li>
+      </ul>
+      <p>The agent can query connections with FQL, inspect process trees and bandwidth timelines, list rules and their history, and, outside read-only mode, add, edit, enable, disable, archive or delete rules. Anything your AI client does with the results, such as sending them to its AI provider, is up to that client; see the <a href={url('privacy/')}>privacy policy</a>.</p>
+
+      <h2 id="faq">Frequently asked questions</h2>
+
+      <details>
+        <summary>What does MacWall record?</summary>
+        <p>For each TCP or UDP connection: the app and process that made it (name, process ID, code-signing identifier and parent-process chain), direction, protocol, remote host, IP address and port, local address, the URL when macOS provides one, the server's country, and the number of bytes sent and received over time.</p>
+        <p>MacWall does not store the contents of your traffic. Everything is kept on your Mac. See the <a href={url('privacy/')}>privacy policy</a>.</p>
+      </details>
+
+      <details>
+        <summary>How do Block, Allow and Ask rules work?</summary>
+        <p>A rule is an FQL expression plus an action. Create one from the <strong>Rules</strong> tab in the sidebar (<strong>Add Rule</strong>), or save your current search as a rule with <strong>Save Rule</strong>.</p>
+        <ul>
+          <li><strong>Block</strong> drops matching connections as they open.</li>
+          <li><strong>Allow</strong> lets matching connections through.</li>
+          <li><strong>Ask</strong> lets a matching connection through and then shows a prompt, so you can turn it into an allow or block rule with one click. The first connection is not held while you decide.</li>
+        </ul>
+        <p>Every edit creates a new version of the rule. You can enable, disable or archive rules at any time. Rules apply to TCP and UDP traffic.</p>
+      </details>
+
+      <details>
+        <summary>What are some useful FQL queries?</summary>
+        <p>FQL (flow query language) is MacWall's own original query language, with filters inspired by Wireshark display filters and pipelines inspired by Loki's LogQL. It filters the log. Type it in the search bar; autocomplete suggests fields, operators and values, and errors are highlighted in place.</p>
+<pre is:raw><code>last 5m AND dir = out AND host CONTAINS "openai"
+country != US AND proto = TCP
+proc = "curl" | sort bytes_out DESC
+host CONTAINS "apple"</code></pre>
+        <p>You can also click any value in the detail panel to show or hide matching rows.</p>
+      </details>
+
+      <details>
+        <summary>Does the MCP server send my data anywhere?</summary>
+        <p>No. The server only talks to the AI client on your Mac that started it, and it does not listen on the network. Your AI client decides what to do with the answers, such as sending them to its AI provider. Setup steps for each client are in <a href="#mcp">Set up the MCP server</a>.</p>
+      </details>
+
+      <details>
+        <summary>Is there a command line?</summary>
+        <p>Yes. The app binary doubles as a CLI:</p>
+<pre is:raw><code>/Applications/MacWall.app/Contents/MacOS/MacWall --status
+/Applications/MacWall.app/Contents/MacOS/MacWall --flows 20
+/Applications/MacWall.app/Contents/MacOS/MacWall --flows 50 --query "dir = out AND proto = TCP"
+/Applications/MacWall.app/Contents/MacOS/MacWall --rules
+/Applications/MacWall.app/Contents/MacOS/MacWall --rule-add --name "block curl" --action block --fql "proc = curl and dir = out"</code></pre>
+        <p>Rules can also be edited, enabled, disabled, archived and deleted (<code>--rule-edit</code>, <code>--rule-enable</code>, <code>--rule-disable</code>, <code>--rule-archive</code>, <code>--rule-delete</code>, each followed by the rule ID).</p>
+      </details>
+
+      <details>
+        <summary>How do I turn MacWall off or remove it?</summary>
+        <ol>
+          <li>Click <strong>Disable</strong> in the MacWall menu bar popover to stop filtering, or turn MacWall off in <strong>System Settings &gt; General &gt; Login Items &amp; Extensions &gt; Network Extensions</strong>.</li>
+          <li>To remove it completely, remove MacWall from that same Network Extensions list, then delete the app from Applications. A restart may be needed to finish removing the extension.</li>
+        </ol>
+        <p>Deleting the app does not delete the connection log. It lives in the app group container <code>group.net.macwall</code> under <code>/private/var/root/Library/Group Containers/</code> (the extension's copy) and <code>~/Library/Group Containers/</code> (the app's copy). Delete those folders to remove all MacWall data; the first needs an administrator account.</p>
+      </details>
+
+      <details>
+        <summary>A website or app stopped working.</summary>
+        <p>Check the Rules tab for a Block rule that matches it: search the log for the host and look at the matching connections. Disable or edit the rule, or click <strong>Disable</strong> in the popover to pause filtering entirely.</p>
+      </details>
+
+      <details>
+        <summary>Why isn't the menu bar shield green?</summary>
+        <p>The extension or the filter isn't active yet. Open the popover and finish the remaining setup steps. If the extension was approved but nothing is logged, make sure MacWall is turned on in the Network Extensions list in System Settings, then restart your Mac.</p>
+      </details>
+
+      <h2 id="requirements">Requirements</h2>
+      <ul>
+        <li>A Mac running macOS 14.0 Sonoma or later</li>
+        <li>An administrator account to approve the network extension</li>
+        <li>For the MCP server: any MCP-capable AI client installed on the same Mac</li>
+      </ul>
+    </div>
+  </main>
+</Layout>

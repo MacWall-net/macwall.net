@@ -1,0 +1,63 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { url } from '../../url';
+---
+
+<Layout title="MacWall Privacy Policy" description="MacWall does not collect, transmit or share any personal data. Connection logs and rules stay on your Mac." current="privacy">
+  <main class="page">
+    <div class="wrap prose">
+      <h1>Privacy Policy</h1>
+      <p class="meta">Effective date: October 28, 2026</p>
+
+      <div class="callout">
+        <p><strong>In short: MacWall collects nothing.</strong> MacWall does not collect, transmit or share any personal data. Network connection logs and rules are stored only on your Mac, in the app's container, and are never sent to the developer or third parties.</p>
+      </div>
+
+      <p>This policy covers the MacWall app for macOS, including its network extension, command-line interface and MCP server, and this website (macwall.net).</p>
+
+      <h2>What MacWall records, and where it stays</h2>
+      <p>To show you your Mac's network activity, MacWall's network content filter records metadata about each TCP and UDP connection:</p>
+      <ul>
+        <li>the app and process that made it (name, process ID, code-signing identifier and parent-process chain)</li>
+        <li>direction and protocol, remote host, IP address and port, local address, and the URL when macOS provides one</li>
+        <li>the remote server's country</li>
+        <li>the number of bytes sent and received</li>
+      </ul>
+      <p>MacWall records only this connection metadata and byte counts. It never stores the contents of your traffic.</p>
+      <p>These records, and the rules you create, are kept in a local database in MacWall's app group container on your Mac. They are read only by the MacWall app on the same Mac. They are never uploaded anywhere. You can delete them at any time; the <a href={url('support/#faq')}>support page</a> explains where they are.</p>
+
+      <h2>What MacWall does not do</h2>
+      <ul>
+        <li>No account or sign-up.</li>
+        <li>No analytics, telemetry, crash reporting, advertising or tracking.</li>
+        <li>No third-party SDKs.</li>
+        <li>No servers run by the developer. The developer never receives your logs, rules or any other data from the app.</li>
+      </ul>
+
+      <h2>Country lookups</h2>
+      <p>The country of each remote server is looked up in a GeoIP database that is bundled with the app. Lookups happen on your Mac, so IP addresses are never sent to a lookup service.</p>
+
+      <h2>Map</h2>
+      <p>MacWall's map is drawn with Apple MapKit. Map tiles are loaded by macOS from Apple, under <a href="https://www.apple.com/legal/privacy/">Apple's privacy policy</a>. The developer receives no data from this.</p>
+
+      <h2>MCP server and AI clients</h2>
+      <p>MacWall's MCP server is local only. It runs when an AI client on your Mac starts it, communicates with that client over standard input and output, and does not listen on the network.</p>
+      <p>When you connect an AI client, that client can read the connection data you ask it to query and, unless you use read-only mode, change rules. What your AI client then does with those results, including whether it sends them to an AI provider, is between you and that client and is governed by its own privacy policy. MacWall does not send anything to AI providers itself.</p>
+
+      <h2>Diagnostic logs</h2>
+      <p>MacWall writes diagnostic messages to the macOS unified log (OSLog), which stays on your Mac like other system logs.</p>
+
+      <h2>This website</h2>
+      <p>macwall.net is a static website. It sets no cookies and uses no analytics, trackers or third-party scripts. The hosting provider may keep standard server logs (such as IP address and requested page) to operate the service.</p>
+
+      <h2>Children</h2>
+      <p>MacWall does not collect personal data from anyone, including children.</p>
+
+      <h2>Changes to this policy</h2>
+      <p>If this policy changes, the updated version will be posted on this page with a new effective date. Significant changes will also be noted in the release notes of the MacWall update they apply to.</p>
+
+      <h2>Contact</h2>
+      <p>Questions about this policy: <a href="https://github.com/MacWall-net/macwall/issues">open an issue on GitHub</a>.</p>
+    </div>
+  </main>
+</Layout>
